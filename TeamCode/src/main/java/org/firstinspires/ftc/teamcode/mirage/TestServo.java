@@ -21,6 +21,7 @@ public class TestServo extends LinearOpMode {
     double  MIN_POSITION = 0.69, MAX_POSITION = 1;
     public void runOpMode(){
         DcMotor flyWheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        DcMotor linearSlide = hardwareMap.get(DcMotorEx.class,"linearSlide");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         armServo = hardwareMap.servo.get("Arm");
         telemetry.addData("Mode", "waiting");
@@ -52,6 +53,13 @@ public class TestServo extends LinearOpMode {
             else if(gamepad1.b) flyWheel.setPower(-1.0);
             else{
                 flyWheel.setPower(0.0);
+            }
+
+            /* LINEAR SLIDE CODE */
+            if(gamepad1.dpad_up) linearSlide.setPower(1.0);
+            else if(gamepad1.dpad_down) linearSlide.setPower(-1.0);
+            else{
+                linearSlide.setPower(0.0);
             }
             /* MOVEMENT CODE (uses roadrunner) */
             drive.setWeightedDrivePower(

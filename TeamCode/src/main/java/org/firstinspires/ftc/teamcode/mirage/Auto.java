@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.teamcode.mirage.auto.ColorDetection;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -15,9 +16,11 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class Auto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+        ColorDetection color = new ColorDetection();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d(8.5,35.5,0));
         waitForStart();
+        int location = 0;
 
         if (isStopRequested()) return;
 
@@ -28,6 +31,7 @@ public class Auto extends LinearOpMode {
                 .splineTo(new Vector2d(7.0625, 82), Math.toRadians(-90)) //Wall
                 .splineTo(new Vector2d(7.0625, 109), Math.toRadians(-90)) //Park
                 .build();
+
 
         drive.followTrajectory(traj);
     }
