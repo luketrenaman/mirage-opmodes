@@ -1,15 +1,127 @@
 package org.firstinspires.ftc.teamcode.mirage.auto;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-public class ColorDetection {
+import java.util.Arrays;
+
+@TeleOp
+public class ColorDetection extends LinearOpMode{
+    //HSL code of the object we're trying to find in 240 vals
+    float[] targetHSL = {211,165,90};
     public void ColorDetection(){
 
     }
-    public int pinkFinder(Bitmap img){
+    float error(float actual,float predicted,boolean h){
+        if(h){
+            actual += 240;
+            predicted += 240;
+            if(actual > predicted){
+                actual -= 240;
+            } else{
+                predicted -= 240;
+            }
+            actual %= 240;
+            predicted %= 240;
+            return (Math.abs(actual - predicted));
+        }
+        return (Math.abs(actual - predicted));
+    }
+    float[] RGBToHSL(float r, float g, float b){
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        float max = Math.max(Math.max(r,g),b), min = Math.min(Math.min(r, g),b);
+        float h = (max + min) / 2;
+        float s = (max + min) / 2;
+        float l = (max + min) / 2;
 
+        if(max == min){
+            h = s = 0; // achromatic
+        } else{
+            float d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            if(max == r) {
+                h = (g - b) / d + (g < b ? 6 : 0);
+            }
+            if(max == g) {
+                h = (b - r) / d + 2;
+            }
+            if(max == b) {
+                h = (r - g) / d + 4;
+            }
+            h /= 6;
+        }
+        float[] hsl = {h*240, s*240, l*240};
+        return hsl;
+    }
+    public float[] toColor(int color){
+
+        float[] rgb = {0,0,0};
+        rgb[0] = ((color >> 16) & 0xff) / 255.0f;
+        rgb[1] = ((color >>  8) & 0xff) / 255.0f;
+        rgb[2] = ((color      ) & 0xff) / 255.0f;
+        return rgb;
+    }
+    public int pinkFinder(Bitmap img){
+        int width = img.getWidth();
+        int height = img.getHeight();
+        float[] rgb = this.toColor(img.getPixel(1,1));
+
+        return 0;
+    }
+    //Returns color center of mass as coordinates
+    public float[] centerFinder(int width, int height, Bitmap image){
+
+        float[] centerOfMass = {0,0};
+        float[] pinkestLocation = {0,0};
+
+        float totalError = 0;
+
+        float minError = Float.MAX_VALUE;
+        for(int y = 0; y<height;y++){
+            for(int x = 0; x<width;x++){
+                float[] colors = toColor(image.getPixel(x,y));
+                float[] hsl = RGBToHSL(colors[0],colors[1],colors[2]);
+                float calcError = error(hsl[0],targetHSL[0],true) + error(hsl[1],targetHSL[1],false) + error(hsl[2],targetHSL[2],false);
+                calcError = (float) Math.exp(-1/10*calcError);
+                centerOfMass[0] += x*calcError;
+                centerOfMass[1] += y*calcError;
+
+                if(calcError < minError){
+                    minError = calcError;
+                    pinkestLocation[0] = x;
+                    pinkestLocation[1] = y;
+                }
+                totalError += calcError;
+                //console.log(image.getPixelColor(x, y));
+            }
+        }
+        centerOfMass[0] /= totalError;
+        centerOfMass[1] /= totalError;
+        telemetry.log().add("captured %s", Arrays.toString(centerOfMass));
+        return centerOfMass;
+    }
+    @Override
+    public void runOpMode() throws InterruptedException {
+        waitForStart();
+        Color col = new Color();
+        int pack = 0;
+        int src[] = {pack, pack, pack, pack};
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        Bitmap bmp = Bitmap.createBitmap(2, 2, conf); // this creates a MUTABLE bitmap
+        bmp.setPixel(0,0,pack);
+        bmp.setPixel(1,0,pack);
+        bmp.setPixel(1,1,pack);
+        bmp.setPixel(0,1,pack);
+
+        this.centerFinder(2,2,bmp);
+        if (isStopRequested()) return;
     }
 }
 
