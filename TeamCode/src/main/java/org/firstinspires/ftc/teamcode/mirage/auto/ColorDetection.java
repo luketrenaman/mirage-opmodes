@@ -89,14 +89,14 @@ public class ColorDetection extends LinearOpMode{
                 float[] colors = toColor(image.getPixel(x,y));
                 float[] hsl = RGBToHSL(colors[0],colors[1],colors[2]);
                 float calcError = error(hsl[0],targetHSL[0],true) + error(hsl[1],targetHSL[1],false) + error(hsl[2],targetHSL[2],false);
-                calcError = (float) Math.exp(-1/10*calcError);
-                centerOfMass[0] += x*calcError;
-                centerOfMass[1] += y*calcError;
+                calcError = (float) Math.exp(-0.1f*calcError);
+                centerOfMass[0] += ((float) x)*calcError;
+                centerOfMass[1] += ((float) y)*calcError;
 
                 if(calcError < minError){
                     minError = calcError;
-                    pinkestLocation[0] = x;
-                    pinkestLocation[1] = y;
+                    pinkestLocation[0] = (float) x;
+                    pinkestLocation[1] = (float) y;
                 }
                 totalError += calcError;
                 //console.log(image.getPixelColor(x, y));
@@ -104,7 +104,6 @@ public class ColorDetection extends LinearOpMode{
         }
         centerOfMass[0] /= totalError;
         centerOfMass[1] /= totalError;
-        telemetry.log().add("captured %s", Arrays.toString(centerOfMass));
         return centerOfMass;
     }
     @Override
