@@ -142,6 +142,14 @@ public class AutoWithCamera extends LinearOpMode {
                         captureWhenAvailable = false;
                         centerOfMass = saveBitmap(bmp);
                         telemetry.log().add("the pink is at: %s", Arrays.toString(centerOfMass));
+                        if(centerOfMass[0] < 200){
+                            telemetry.log().add("Object is in 2nd position");
+                        }
+                        else if(centerOfMass[0] > 450){
+                            telemetry.log().add("Object is in 3rd position");
+                        } else{
+                            telemetry.log().add("Object is in 1st position");
+                        }
                     }
                 }
 
