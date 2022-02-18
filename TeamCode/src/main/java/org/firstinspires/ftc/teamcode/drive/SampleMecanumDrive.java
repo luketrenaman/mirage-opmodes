@@ -280,7 +280,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
         return wheelPositions;
     }
-
+    public void breakFollowing() {
+        trajectorySequenceRunner.breakFollowing();
+    }
     @Override
     public List<Double> getWheelVelocities() {
         List<Double> wheelVelocities = new ArrayList<>();
