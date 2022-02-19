@@ -25,13 +25,22 @@ public class GigachadDrive extends LinearOpMode {
         DcMotor intake = hardwareMap.get(DcMotorEx.class, "intake");
         DcMotor flyWheel = hardwareMap.get(DcMotorEx.class, "flywheel");
         DcMotor linearSlide = hardwareMap.get(DcMotorEx.class,"linearSlide");
-        armServo = hardwareMap.servo.get("Arm");
+        DcMotor arm = hardwareMap.get(DcMotorEx.class,"arm");
+        linearSlide.setTargetPosition(0);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setPower(0.2f);
+
+        //arm.setTargetPosition(0);
+        //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //arm.setPower(0.5f);
+        //arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         outtake = hardwareMap.servo.get("outtake");
         telemetry.addData("Mode", "waiting");
         telemetry.update();
 
         DriveControl driveControl = new DriveControl(telemetry,drive);
-        MechanismControl mechanismControl = new MechanismControl(telemetry,flyWheel,linearSlide,armServo,outtake,intake);
+        MechanismControl mechanismControl = new MechanismControl(telemetry,flyWheel,linearSlide,arm,outtake,intake);
         waitForStart();
 
         //double targetHeading = 0;
