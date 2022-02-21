@@ -13,10 +13,10 @@ public class MechanismControl {
     private static Telemetry telemetry;
     private static double  outtakePosition,leftY,rightY;
     private static double  MIN_POSITION = 0, MAX_POSITION = 1;
-    private static double MIN_OUTTAKE_POSITION = 0.3, MAX_OUTTAKE_POSITION = 1;
+    private static double MIN_OUTTAKE_POSITION = 0.1 , MAX_OUTTAKE_POSITION = 0.73 ;
     private static int linearSlidePosition = 0,armPosition = 0;
-    private static int SLIDE_MIN_POSITION = 0;
-    private static int SLIDE_MAX_POSITION = -504; //Measured in ticks
+    private static int SLIDE_MIN_POSITION  = 0;
+    private static int SLIDE_MAX_POSITION = -1107; //Measured in ticks
     private static int ARM_MIN_POSITION = 0;
     private static int ARM_MAX_POSITION = 500;
     public MechanismControl(Telemetry telem, DcMotor fw, DcMotor ls, DcMotor a, Servo ot, DcMotor it) {
@@ -32,35 +32,25 @@ public class MechanismControl {
 
         /* SERVO CODE */
         // move arm down on A button if not already at lowest position.
-//        if (gamepad.dpad_up && armPosition < ARM_MAX_POSITION) armPosition += 10;
-//        else if (gamepad.dpad_down && armPosition > ARM_MIN_POSITION) armPosition -= 10;
+        if (gamepad.dpad_up && armPosition < ARM_MAX_POSITION) armPosition += 10;
+        else if (gamepad.dpad_down && armPosition > ARM_MIN_POSITION) armPosition -= 10;
 
-//        if(Math.abs(arm.getCurrentPosition()) > Math.abs(arm.getTargetPosition())){
-//            arm.setPower(0);
-//        } else{
-//            arm.setPower(0.8f);
-//        }
-//        arm.setTargetPosition(-armPosition);
-        if(gamepad.dpad_up) arm.setPower(1.0f);
-        else if(gamepad.dpad_down) arm.setPower(-1.0f);
-        else{
-            arm.setPower(0f);
-        }
+        arm.setTargetPosition(-armPosition);
         telemetry.addData("Arm position in ticks: %s",-armPosition);
 
         // move arm up on B button if not already at the highest position.
         //armServo.setPosition(Range.clip(armPosition, MIN_POSITION, MAX_POSITION));
         /* INTAKE */
-        if(gamepad.cross){
+        if(gamepad.triangle){
             intake.setPower(1.0f);
         }
-        else if(gamepad.triangle){
+        else if(gamepad.cross){
             intake.setPower(-1.0f);
         } else{
             intake.setPower(0f);
         }
         /* OUTTAKE */
-        if(gamepad.left_bumper){
+        if(gamepad.right_bumper){
             outtakePosition = MIN_OUTTAKE_POSITION;
         } else{
             outtakePosition = MAX_OUTTAKE_POSITION;
@@ -71,10 +61,9 @@ public class MechanismControl {
         //telemetry.addData("arm servo", "position=" + outtakePosition + "  actual=" + outtake.getPosition());
 
         /* FLYWHEEL CODE */
-        if(gamepad.x) flyWheel.setPower(0.725);
-        else if(gamepad.b) flyWheel.setPower(-0.725);
+        if(gamepad.circle) flyWheel.setPower(0.725f /2f);
         else{
-            flyWheel.setPower(0.0);
+            flyWheel.setPower(0f);
         }
         /* LINEAR SLIDE */
         /* This is potential debug code if we aren't sure what the maximum extension ticks of the linear slide are
@@ -98,7 +87,7 @@ public class MechanismControl {
              linearSlide.setPower(0);
             linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } else{
-            linearSlide.setPower(0.8f);
+            linearSlide.setPower(1.0f);
             linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         linearSlide.setTargetPosition(linearSlidePosition);

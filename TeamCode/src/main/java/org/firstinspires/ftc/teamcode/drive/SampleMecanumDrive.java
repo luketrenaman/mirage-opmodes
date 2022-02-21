@@ -120,6 +120,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
+        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.REVERSE);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
@@ -273,7 +275,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         for (DcMotorEx motor : motors) {
             a++;
             double flip = -1.0;
-            if(a == 3){
+            if(a == 1){
                 flip = 1.0;
             }
             wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()) * flip);
@@ -290,7 +292,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         for (DcMotorEx motor : motors) {
             a++;
             double flip = -1.0;
-            if(a == 3){
+            if(a == 1){
                 flip = 1.0;
             }
             wheelVelocities.add(encoderTicksToInches(motor.getVelocity()) * flip);

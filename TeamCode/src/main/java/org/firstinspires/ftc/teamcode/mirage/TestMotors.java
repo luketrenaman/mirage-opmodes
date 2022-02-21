@@ -19,6 +19,8 @@ public class TestMotors extends LinearOpMode {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
          */
+        DcMotor arm = hardwareMap.dcMotor.get("arm");
+        arm.setPower(1.0f);
         DcMotor motorFrontLeft = hardwareMap.dcMotor.get("leftFront");
         DcMotor motorBackLeft = hardwareMap.dcMotor.get("leftRear");
         DcMotor motorFrontRight = hardwareMap.dcMotor.get("rightFront");

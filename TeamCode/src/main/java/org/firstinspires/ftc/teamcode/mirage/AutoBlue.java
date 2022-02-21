@@ -21,6 +21,8 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @Autonomous(group = "drive")
 public class AutoBlue extends LinearOpMode {
     Servo armServo,outtake;
+    private static int ARM_MIN_POSITION = 0;
+    private static int ARM_MAX_POSITION = 500;
     public static Vector2d transform(double xIn,double yIn){
         double theta = Math.toRadians(-90);
         double x = ( xIn - 72 ) * Math.cos(theta) - (yIn - 72) * Math.sin(theta);
@@ -33,14 +35,16 @@ public class AutoBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         DcMotor flyWheel = hardwareMap.get(DcMotorEx.class, "flywheel");
         DcMotor linearSlide = hardwareMap.get(DcMotorEx.class,"linearSlide");
-        armServo = hardwareMap.servo.get("Arm");
-        //DcMotor intake = hardwareMap.get(DcMotorEx.class, "intake");
+        DcMotor arm = hardwareMap.get(DcMotorEx.class,"arm");
+        arm.setTargetPosition(-ARM_MAX_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(1.0f);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtake = hardwareMap.servo.get("outtake");
-        armServo = hardwareMap.servo.get("Arm");
-        armServo.setPosition(.69);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        outtake.setPosition(0.73f);
         waitForStart();
-        double ROT = 270;
+        double ROT = 90;
         /*
         *
         Vector2d pos2 = transform(8.0625, 24) ;
@@ -50,11 +54,11 @@ public class AutoBlue extends LinearOpMode {
         Vector2d pos6 = transform(8.0625, 109);
         * */
         Vector2d shippingLoc = new Vector2d(-12,24);
-        Vector2d pos2 = new Vector2d(-48, 63.9375);
-        Vector2d pos3 = new Vector2d(-55.9, 63.975);
-        Vector2d pos4 = new Vector2d(-30.2, 36.5);
-        Vector2d pos5 = new Vector2d(-8.0625, 63.9375);
-        Vector2d pos6 = new Vector2d(48.2292830602, 63.9375);
+        Vector2d pos2 = new Vector2d(-49.4, 63.9375);
+        Vector2d pos3 = new Vector2d(-56.2, 63.975);
+        Vector2d pos4 = new Vector2d(-30, 36.3);
+        Vector2d pos5 = new Vector2d(-8.0625, 77);
+        Vector2d pos6 = new Vector2d(48.2292830602, 77);
         drive.setPoseEstimate(new Pose2d(pos2.getX(),pos2.getY(),Math.toRadians(0 + ROT - 180)));
         // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
         TrajectorySequence goToFlywheel = drive.trajectorySequenceBuilder(new Pose2d(pos2.getX(), pos2.getY(), Math.toRadians(0 + ROT - 180))) //Start
@@ -64,7 +68,7 @@ public class AutoBlue extends LinearOpMode {
                 .build();
         double yDiff = (pos4.getY()-shippingLoc.getY());
         double xDiff = (pos4.getX() - shippingLoc.getX());
-        double angle = Math.atan2(yDiff,xDiff) + Math.PI;
+        double angle = Math.atan2(yDiff,xDiff);
         TrajectorySequence goToShippingHub = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(pos4.getX(), pos4.getY(), angle)) //Ship
                 .waitSeconds(1f)
@@ -75,13 +79,13 @@ public class AutoBlue extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(pos6.getX(), pos6.getY(), Math.toRadians(-90 + ROT))) //Park
                 .build();
         drive.followTrajectorySequence(goToFlywheel);
-        flyWheel.setPower(1.0f);
-        Thread.sleep(2000);
+        flyWheel.setPower(0.725f/2f);
+        Thread.sleep(4000);
         flyWheel.setPower(0f);
         drive.followTrajectorySequence(goToShippingHub);
-        outtake.setPosition(0.45f);
+        outtake.setPosition(0.1f);
         Thread.sleep(2000);
-        outtake.setPosition(1.0f);
+        outtake.setPosition(0.73f);
         drive.followTrajectorySequence(goToWarehouse);
         //0.725
         }

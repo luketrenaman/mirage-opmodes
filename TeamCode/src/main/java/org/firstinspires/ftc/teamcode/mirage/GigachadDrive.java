@@ -20,15 +20,23 @@ import org.firstinspires.ftc.teamcode.mirage.teleop.MechanismControl;
 public class GigachadDrive extends LinearOpMode {
     Servo   armServo,outtake;
     //DcMotor intake;
+    private static int ARM_MIN_POSITION = 0;
+    private static int ARM_MAX_POSITION = 0;
     public void runOpMode(){
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         DcMotor intake = hardwareMap.get(DcMotorEx.class, "intake");
         DcMotor flyWheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        DcMotor linearSlide = hardwareMap.get(DcMotorEx.class,"linearSlide");
         DcMotor arm = hardwareMap.get(DcMotorEx.class,"arm");
+        arm.setTargetPosition(ARM_MIN_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(1.0f);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ARM_MIN_POSITION = arm.getCurrentPosition();
+        ARM_MAX_POSITION = arm.getCurrentPosition() + 500;
+        DcMotor linearSlide = hardwareMap.get(DcMotorEx.class,"linearSlide");
         linearSlide.setTargetPosition(0);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(0.2f);
+        linearSlide.setPower(1.0f);
 
         //arm.setTargetPosition(0);
         //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
